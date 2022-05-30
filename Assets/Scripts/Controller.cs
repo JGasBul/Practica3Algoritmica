@@ -14,6 +14,7 @@ public class Controller : MonoBehaviour
 
     //Otras variables
     Tile[] tiles = new Tile[Constants.NumTiles];
+    List<Tile> robSelectable = new List<Tile>();
     private int roundCount = 0;
     private int state;
     private int clickedTile = -1;
@@ -96,6 +97,7 @@ public class Controller : MonoBehaviour
         {
             tile.Reset();
         }
+        robSelectable.Clear();
     }
 
     public void ClickOnCop(int cop_id)
@@ -175,7 +177,12 @@ public class Controller : MonoBehaviour
         - Movemos al caco a esa casilla
         - Actualizamos la variable currentTile del caco a la nueva casilla
         */
-        Tile newTile = tiles[tiles[clickedTile].adjacency[Random.Range(0, tiles[clickedTile].adjacency.Count)]];
+        Tile newTile = robSelectable[Random.Range(0, robSelectable.Count)];
+        while (tiles[clickedTile] == newTile)
+        {
+            newTile = robSelectable[Random.Range(0, robSelectable.Count)];
+        }
+
         robber.GetComponent<RobberMove>().MoveToTile(newTile);
         robber.GetComponent<RobberMove>().currentTile = newTile.numTile;
     }
@@ -286,21 +293,27 @@ public class Controller : MonoBehaviour
                 }
             }
         }
-        foreach (var tile in selectable)
+        if (cop == true)
         {
-            if (tile != tiles[indexcurrentTile])
+            foreach (var tile in selectable)
             {
-                tile.selectable = true;
+                if (tile != tiles[indexcurrentTile])
+                {
+                    tile.selectable = true;
+                }
+
+            }
+        }
+        else
+        {
+            foreach (var tile in selectable)
+            {
+                if (tile != tiles[indexcurrentTile])
+                {
+                    tile.selectable = true;
+                    robSelectable.Add(tile);
+                }
             }
         }
     }
-
-
-
-
-
-
-
-
-
 }
